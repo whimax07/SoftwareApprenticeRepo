@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.stream.IntStream;
 
 public class Table {
 
@@ -8,7 +7,7 @@ public class Table {
 
     private final int numHeaders;
 
-    private ArrayList<ArrayList<String>> data;
+    private final ArrayList<ArrayList<String>> data = new ArrayList<>();
 
 
 
@@ -63,7 +62,7 @@ public class Table {
 
         public StringBuilder builder = new StringBuilder();
 
-        private ArrayList<Integer> headerWidths = new ArrayList<>();
+        private final ArrayList<Integer> headerWidths = new ArrayList<>();
 
 
 
@@ -89,7 +88,7 @@ public class Table {
                 for (var row : data) {
                     width_a = Math.max(width_a, row.get(i).length());
                 }
-                headerWidths.set(i, width_a);
+                headerWidths.add(width_a);
 
 
                 final int finalI = i;
@@ -97,6 +96,8 @@ public class Table {
                 // 2) This one I quite like.
                 var width_b = data.stream().mapToInt(row -> row.get(finalI).length()).max().orElse(0);
                 width_b = Math.max(width_b, headers.get(i).length());
+                // NOTE(Max): Because I am repeating work instead of having these as comments we need to use the set
+                // method instead of the add method below.
                 headerWidths.set(i, width_b);
 
 
@@ -105,6 +106,8 @@ public class Table {
                         Comparator.comparingInt(row -> row.get(finalI).length())
                 ).orElse(headers).get(i).length();
                 width_c = Math.max(width_c, headers.get(i).length());
+                // NOTE(Max): Because I am repeating work instead of having these as comments we need to use the set
+                // method instead of the add method below.
                 headerWidths.set(i, width_c);
             }
         }

@@ -26,6 +26,21 @@ static void find_column_widths(
     }
 
     // Find the width of each data entry.
+    for (int header_index = 0; header_index < num_headers; header_index++) {
+        size_t max_width = column_widths[header_index];
+        for (int entry_index = 0; entry_index < num_entries; entry_index++) {
+            size_t value_len = strlen(data[entry_index][header_index]);
+            if (max_width < value_len) {
+                max_width = value_len;
+            }
+        }
+        column_widths[header_index] = max_width;
+    }
+
+#ifdef false
+    // This is slower than the above because it may do multiple writes to an
+    // address with `column_widths[header_index] = value_len` where as the fast
+    // version will only ever make one per `header_index`. (Noted by Julian, ty)
     for (int entry_index = 0; entry_index < num_entries; entry_index++) {
         for (int header_index = 0; header_index < num_headers; header_index++) {
             size_t value_len = strlen(data[entry_index][header_index]);
@@ -34,6 +49,7 @@ static void find_column_widths(
             }
         }
     }
+#endif
 
 #ifdef TESTS_ON
     printf("Column widths: ");
@@ -145,8 +161,8 @@ int main () {
     };
 
     prettyPrint(
-            sizeof(headers) / sizeof(char *),
-            sizeof(data) / sizeof(headers),
+            sizeof(headers) / sizeof(*headers),
+            sizeof(data) / sizeof(*data),
             headers,
             data
     );

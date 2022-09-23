@@ -1,21 +1,19 @@
-import java.util.ArrayList;
+import java.util.Arrays;
 
 class PrettyPrintJava {
 
-    public static void printTable(String[] headers, ArrayList<Object[]> data) {
-
-    }
-
     public static void main(String[] args) {
-        String[] headers = new String[]{"Name", "Language", "OS"};
+        Table table = new Table(Arrays.asList("Name", "Language", "OS"));
+        table.addRows(
+                Arrays.asList(
+                        Arrays.asList("Max", "Java", "Windows"),
+                        Arrays.asList("Adam", "C++", "Linux"),
+                        Arrays.asList("James", "Python", "Windows"),
+                        Arrays.asList("Josh", "Python", "Linux")
+                )
+        );
 
-        ArrayList<Object[]> data = new ArrayList<>();
-        data.add(new Object[]{"a"});
-        data.add(new Object[]{"b", "c"});
-
-        printTable(new String[]{}, data);
-
-
+        System.out.println(table);
     }
 
 }

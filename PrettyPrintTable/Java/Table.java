@@ -1,17 +1,18 @@
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class Table {
 
-    private final ArrayList<String> headers;
+    private final List<String> headers;
 
     private final int numHeaders;
 
-    private final ArrayList<ArrayList<String>> data = new ArrayList<>();
+    private final List<List<String>> data = new ArrayList<>();
 
 
 
-    public Table(ArrayList<String> headers) {
+    public Table(List<String> headers) {
         this.headers = headers;
         numHeaders = headers.size();
     }
@@ -22,7 +23,7 @@ public class Table {
      * This is the no expect version of the add a row to the table function.
      * @return false is the row has a different number of entries compared to headers.
      */
-    public boolean addRow(ArrayList<String> row) {
+    public boolean addRow(List<String> row) {
         if (row.size() == numHeaders) {
             data.add(row);
             return true;
@@ -35,7 +36,7 @@ public class Table {
      * This is the no expect version of the add some number of rows to the table function.
      * @return false if any of the rows has a different number of entries compared to headers.
      */
-    public boolean addRows(ArrayList<ArrayList<String>> rows) {
+    public boolean addRows(List<List<String>> rows) {
         if (rows.size() == 0) {
             return true;
         }
@@ -58,11 +59,20 @@ public class Table {
     }
 
 
+
     private class StringifyTable {
 
         public StringBuilder builder = new StringBuilder();
 
-        private final ArrayList<Integer> headerWidths = new ArrayList<>();
+        private final List<Integer> headerWidths = new ArrayList<>();
+
+        private static final int MARGIN = 1;
+
+        // Add the symbols used as vars so changing them in one place propagates. You could use an enum for this as
+        // well. Emitting this entirely is also a reasonable choice.
+        private static final String HORIZONTAL = "-";
+        private static final String VERTICAL = "|";
+        private static final String CROSS = "+";
 
 
 
@@ -101,7 +111,7 @@ public class Table {
                 headerWidths.set(i, width_b);
 
 
-                // 3) This works and is cool, but I can't recommend it.
+                // 3) Comparator provide a bunch of factory methods to make `Comparator`s.
                 var width_c = data.stream().max(
                         Comparator.comparingInt(row -> row.get(finalI).length())
                 ).orElse(headers).get(i).length();
@@ -113,15 +123,38 @@ public class Table {
         }
 
         private void addLine() {
+            headerWidths.forEach(width -> {
+                builder.append(CROSS);
+                builder.append(HORIZONTAL.repeat(width + MARGIN * 2));
+            });
+            builder.append(CROSS);
+            builder.append("\n");
+        }
 
+        private void addRow(List<String> row) {
+            // NOTE(Max): Needing to use a normal for-loop here is a weakness of Java streams. Which is a shame as this
+            // is where you really want them in case of a length mismatch. Something like the link would be preferred in
+            // a real code base. https://stackoverflow.com/a/34804751
+            for (int i = 0; i < numHeaders; i++) {
+                String item = row.get(i);
+                int width = headerWidths.get(i);
+                int spaceNeedsToBeFilled = width - item.length();
+
+                builder.append(VERTICAL);
+                builder.append(" ".repeat(MARGIN));
+                builder.append(item);
+                builder.append(" ".repeat(spaceNeedsToBeFilled + MARGIN));
+            }
+            builder.append(VERTICAL);
+            builder.append("\n");
         }
 
         private void addHeaders() {
-
+            addRow(headers);
         }
 
         private void addData() {
-
+            data.forEach(this::addRow);
         }
 
     }

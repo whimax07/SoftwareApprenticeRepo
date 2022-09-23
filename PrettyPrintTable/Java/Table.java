@@ -91,7 +91,7 @@ public class Table {
         private void findColumnWidths() {
             for (int i = 0; i < numHeaders; i++) {
                 // NOTE(Max): There are a couple of different ways to write the find bit that finds the width of a
-                // column, I've done a couple of them. The 3rd one is more of an example of how streams work.
+                // column, I've done a couple of them. The 3rd one is more of an example of what not to do.
 
                 // 1) The normal way.
                 int width_a = headers.get(i).length();

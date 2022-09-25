@@ -1,0 +1,2 @@
+# C++: Pretty print a table
+This one is a bit weird. You can very likely do some very cool things to make this a generic container. I'm not going to do that as it sounds like a weeks or months long project to get it working nicely. :) Writen by Max reviewed by Adam.

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PrettyPrintTable/Java/PrettyPrintTable.iml" filepath="$PROJECT_DIR$/PrettyPrintTable/Java/PrettyPrintTable.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/PrittyPrint.iml" filepath="$PROJECT_DIR$/.idea/PrittyPrint.iml" />
     </modules>
   </component>
 </project>

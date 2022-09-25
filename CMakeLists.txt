@@ -4,5 +4,6 @@ project(ApprenticesStuff)
 set(CMAKE_CXX_STANDARD 20)
 
 
-add_subdirectory(PrettyPrintTable\C)
+add_subdirectory(PrettyPrintTable/C)
+add_subdirectory(PrettyPrintTable/Cpp)
 

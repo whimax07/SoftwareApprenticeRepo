@@ -12,12 +12,20 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <sstream>
+#include "IterPair.h"
 
 namespace pretty {
 
 using Row = std::vector<std::string>;
 using Data = std::vector<Row>;
 using SizeType = unsigned long;
+
+static std::string repeat(const std::string& input, size_t num) {
+    std::ostringstream os;
+    std::fill_n(std::ostream_iterator<std::string>(os), num, input);
+    return os.str();
+}
 
 
 // This template gives you compile time guaranties that each row of data has the
@@ -73,7 +81,7 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
         for (const auto& row : data) {
             auto strI = row.begin();
             auto widthI = widths2.begin();
-            for ( ; widthI < widths2.end(); ++ strI, ++ widthI) {
+            for ( ; widthI < widths2.end(); strI++, widthI++) {
                 if (*widthI < strI->size()) {
                     *widthI = strI->size();
                 }
@@ -82,7 +90,7 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
     }
 
 
-    // Using square bracket indexing.
+    // Using square bracket indexing, row wise search.
     // And before iterators we just used for loops.
     {
         std::vector<SizeType> widths3 = {};
@@ -100,12 +108,46 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
         }
     }
 
+
+    // Using square bracket indexing, column wise search.
+    {
+        std::vector<SizeType> widths4 = {};
+
+        for (int entry = 0; entry < headers.size(); entry++) {
+            auto width = headers[entry].size();
+            for (const auto& row: data) {
+                if (width < row[entry].size()) {
+                    width = row[entry].size();
+                }
+            }
+            widths4.push_back(width);
+        }
+    }
+
     return widths1;
 }
 
 
+void drawBar(const std::vector<SizeType>& widths) {
+    std::ranges::for_each(widths, [](auto width) {
+        std::cout << "+" << repeat("-", width + 2);
+    });
+    std::cout << "+" << std::endl;
+}
+
+
 void drawRow(const std::vector<SizeType>& widths, const Row& row) {
-    std::cout << typeid(widths).name();
+        // In C++ 23 you should use std::ranges::zip_view instead of my home
+        // brew integrator that is likely broken.
+        auto iterPair = IterPair(widths.begin(), widths.end(), row.begin(), row.end());
+
+        for (auto [widthI, entryI] : iterPair) {
+            std::cout << "| "
+                      << *entryI
+                      << repeat(" ", *widthI - entryI->size())
+                      << " ";
+        }
+        std::cout << "|" << std::endl;
 }
 
 
@@ -128,18 +170,12 @@ void printTable(const Row& headers, const Data& data) {
     ));
 
     std::vector<SizeType> widths = calcWidths(headers, data);
-//    drawBar(widths);
+    drawBar(widths);
     drawRow(widths, headers);
-//    drawBar(widths);
+    drawBar(widths);
     drawData(widths, data);
-//    drawBar(widths);
+    drawBar(widths);
 }
-
-
-
-
-
-
 
 
 }

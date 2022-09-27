@@ -13,7 +13,7 @@ class PrettyPrintJava {
                 )
         );
 
-        System.out.println(table);
+        System.value.println(table);
     }
 
 }

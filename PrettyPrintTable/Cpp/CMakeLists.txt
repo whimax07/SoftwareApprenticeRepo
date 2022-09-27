@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(PrettyPrintCpp
         PrettyPrintCpp.h
-        PrettyPrintCpp.cpp PrettyPrintCpp.cpp PrettyPrintCpp.h)
+        PrettyPrintCpp.h IterPair.h main.cpp)

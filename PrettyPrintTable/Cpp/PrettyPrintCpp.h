@@ -28,21 +28,19 @@ void printTableCompileTime(
         std::array<std::string, number_headers> headers,
         std::vector<std::array<std::string, number_headers>> data
 ) {
-
+    // This is a stub.
 }
 
 
-std::vector<SizeType> calcWidths(
-        const std::vector<std::string>& headers,
-        const std::vector<std::vector<std::string>>& data
-) {
-    std::vector<SizeType> widths = {};
+std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
+    std::vector<SizeType> widths1 = {};
 
-
+    // Using std algorithms.
+    // The current advice is to use iterators (or ranges) with std algorithms.
     {
         std::ranges::for_each(
                 headers,
-                [&widths](auto str) { widths.push_back(str.size()); }
+                [&widths1](auto str) { widths1.push_back(str.size()); }
         );
 
 
@@ -51,9 +49,9 @@ std::vector<SizeType> calcWidths(
         auto checkRow = [&](const auto &row) {
             std::ranges::transform(
                     // Inputs.
-                    row, widths,
+                    row, widths1,
                     // Output.
-                    widths.begin(),
+                    widths1.begin(),
                     // Operation to make the result.
                     max,
                     // Project the inputs.
@@ -64,15 +62,18 @@ std::vector<SizeType> calcWidths(
     }
 
 
+    // Using iterators.
+    // The advice used to be you should use iterators with for loops.
     {
+        std::vector<SizeType> widths2 = {};
         for (const auto& header : headers) {
-            widths.push_back(headers.size());
+            widths2.push_back(headers.size());
         }
 
         for (const auto& row : data) {
             auto strI = row.begin();
-            auto widthI = widths.begin();
-            for ( ; widthI < widths.end(); ++ strI, ++ widthI) {
+            auto widthI = widths2.begin();
+            for ( ; widthI < widths2.end(); ++ strI, ++ widthI) {
                 if (*widthI < strI->size()) {
                     *widthI = strI->size();
                 }
@@ -80,7 +81,26 @@ std::vector<SizeType> calcWidths(
         }
     }
 
-    return widths;
+
+    // Using square bracket indexing.
+    // And before iterators we just used for loops.
+    {
+        std::vector<SizeType> widths3 = {};
+
+        for (const auto& header : headers) {
+            widths3.push_back(headers.size());
+        }
+
+        for (const auto& row : data) {
+            for (int entry = 0; entry < row.size(); entry++) {
+                if (widths3[entry] < row[entry].size()) {
+                    widths3[entry] = row[entry].size();
+                }
+            }
+        }
+    }
+
+    return widths1;
 }
 
 

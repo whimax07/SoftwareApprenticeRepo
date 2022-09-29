@@ -7,6 +7,7 @@
 
 #include <iterator>
 
+namespace pretty {
 
 /**
  * This is my first attempt at writing an iterator. <br>
@@ -38,7 +39,7 @@ class IterPair {
     class iterator : public std::iterator<
             std::input_iterator_tag,    // iterator_category
             IterType                    // value_type
-    >{
+    > {
 
     private:
         IterPair *parent_;
@@ -49,12 +50,12 @@ class IterPair {
         explicit iterator(IterPair *parent, IterType in)
                 : parent_(parent), iter_(in) {}
 
-        iterator(const iterator&) = default;
+        iterator(const iterator &) = default;
 
         // Pre increment.
-        iterator& operator++() {
+        iterator &operator++() {
             bool canIncrement = (iter_.left < parent_->leftEnd_)
-                    || (iter_.right < parent_->rightEnd_);
+                                || (iter_.right < parent_->rightEnd_);
 
             if (canIncrement) {
                 iter_ = {++iter_.left, ++iter_.right};
@@ -66,7 +67,7 @@ class IterPair {
         }
 
         // Post increment.
-        iterator& operator++(int) {
+        iterator &operator++(int) {
             iterator retval = *this;
             ++(*this);
             return retval;
@@ -99,6 +100,7 @@ public:
             : leftStart_(leftStart), leftEnd_(leftEnd), rightStart_(rightStart),
               rightEnd_(rightEnd) {}
 
+
     iterator begin() {
         return iterator(this, IterType(leftStart_, rightStart_));
     }
@@ -108,6 +110,10 @@ public:
     }
 
 };
+
+
+}
+
 
 
 #endif //PRETTYPRINTJAVA_JAVA_ITERPAIR_H

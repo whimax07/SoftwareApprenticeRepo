@@ -41,25 +41,37 @@ void printTableCompileTime(
 
 
 std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
-    std::vector<SizeType> widths1 = {};
+    // NOTE(Max): Some examples of how to write the same thing using the various
+    // options you have in the order they are favoured.
+
+    // Using std algorithms in C++ 23.
+    // When we have access to std::ranges::views::zip this will be a good way to
+    // iterate through both widths and row at the same time. This will likely be
+    // the preferred implementation before profiling.
+    {
+        // When C++23.
+    }
+
+
+    std::vector<SizeType> widths2 = {};
 
     // Using std algorithms.
     // The current advice is to use iterators (or ranges) with std algorithms.
     {
         std::ranges::for_each(
                 headers,
-                [&widths1](auto str) { widths1.push_back(str.size()); }
+                [&widths2](auto str) { widths2.push_back(str.size()); }
         );
 
 
         auto max = [](auto a, auto b) { return std::max(a, b); };
         auto strSize = [](const auto &str) { return str.size(); };
-        auto checkRow = [&](const auto &row) {
+        auto checkRow = [&](const auto& row) {
             std::ranges::transform(
                     // Inputs.
-                    row, widths1,
+                    row, widths2,
                     // Output.
-                    widths1.begin(),
+                    widths2.begin(),
                     // Operation to make the result.
                     max,
                     // Project the inputs.
@@ -73,15 +85,15 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
     // Using iterators.
     // The advice used to be you should use iterators with for loops.
     {
-        std::vector<SizeType> widths2 = {};
+        std::vector<SizeType> widths3 = {};
         for (const auto& header : headers) {
-            widths2.push_back(headers.size());
+            widths3.push_back(headers.size());
         }
 
         for (const auto& row : data) {
             auto strI = row.begin();
-            auto widthI = widths2.begin();
-            for ( ; widthI < widths2.end(); strI++, widthI++) {
+            auto widthI = widths3.begin();
+            for ( ; widthI < widths3.end(); strI++, widthI++) {
                 if (*widthI < strI->size()) {
                     *widthI = strI->size();
                 }
@@ -93,16 +105,16 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
     // Using square bracket indexing, row wise search.
     // And before iterators we just used for loops.
     {
-        std::vector<SizeType> widths3 = {};
+        std::vector<SizeType> widths4 = {};
 
         for (const auto& header : headers) {
-            widths3.push_back(headers.size());
+            widths4.push_back(headers.size());
         }
 
         for (const auto& row : data) {
             for (int entry = 0; entry < row.size(); entry++) {
-                if (widths3[entry] < row[entry].size()) {
-                    widths3[entry] = row[entry].size();
+                if (widths4[entry] < row[entry].size()) {
+                    widths4[entry] = row[entry].size();
                 }
             }
         }
@@ -111,7 +123,7 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
 
     // Using square bracket indexing, column wise search.
     {
-        std::vector<SizeType> widths4 = {};
+        std::vector<SizeType> widths5 = {};
 
         for (int entry = 0; entry < headers.size(); entry++) {
             auto width = headers[entry].size();
@@ -120,11 +132,11 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
                     width = row[entry].size();
                 }
             }
-            widths4.push_back(width);
+            widths5.push_back(width);
         }
     }
 
-    return widths1;
+    return widths2;
 }
 
 
@@ -160,10 +172,21 @@ void drawData(const std::vector<SizeType>& widths, const Data& data) {
 }
 
 
+/**
+ * Pretty print a table.
+ *
+ * Example:
+ *
+ *
+ *
+ * @param headers
+ * @param data all of the rows must have the same number of elements as entries
+ * in headers.
+ */
 void printTable(const Row& headers, const Data& data) {
     auto num_headers = headers.size();
 
-    // All rows must have the same number of items.
+    // All rows must have the same number of items. (Error message.)
     assert(std::ranges::all_of(
             data,
             [num_headers](const auto& row) { return row.size() == num_headers; }

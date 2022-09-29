@@ -43,6 +43,8 @@ void printTableCompileTime(
 std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
     // NOTE(Max): Some examples of how to write the same thing using the various
     // options you have in the order they are favoured.
+    // (The main problem is how to integrate through two vectors at the same
+    // time.)
 
     // Using std algorithms in C++ 23.
     // When we have access to std::ranges::views::zip this will be a good way to
@@ -65,7 +67,7 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
 
 
         auto max = [](auto a, auto b) { return std::max(a, b); };
-        auto strSize = [](const auto &str) { return str.size(); };
+        auto strSize = [](const auto& str) { return str.size(); };
         auto checkRow = [&](const auto& row) {
             std::ranges::transform(
                     // Inputs.
@@ -78,6 +80,7 @@ std::vector<SizeType> calcWidths(const Row& headers, const Data& data) {
                     strSize, {}
             );
         };
+
         std::ranges::for_each(data, checkRow);
     }
 
